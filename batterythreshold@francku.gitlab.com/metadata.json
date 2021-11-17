@@ -1,0 +1,9 @@
+{
+  "name": "Battery threshold",
+  "description": "Set a threshold to limit battery charge level",
+  "uuid": "batterythreshold@francku.gitlab.com",
+  "version": 1,
+  "shell-version": [
+    "41"
+  ]
+}
