@@ -4,6 +4,6 @@
   "uuid": "batterythreshold@francku.gitlab.com",
   "version": 2,
   "shell-version": [
-    "41", "42"
+    "41", "42", "43"
   ]
 }
