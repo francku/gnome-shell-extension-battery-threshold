@@ -6,4 +6,4 @@ This extension uses "pkexec" since sudo permissions are needed to change the thr
 
 ![Screenshot](screenshot.png)
 
-Tested on Fedora Silverblue 35 (gnome-shell 3.41) on an Asus Vivobook.
+Tested on Fedora 37 (gnome-shell 43) on Asus Zenbook UX433F.
