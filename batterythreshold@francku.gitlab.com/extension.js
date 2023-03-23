@@ -31,12 +31,16 @@ const _ = ExtensionUtils.gettext;
 
 const ByteArray = imports.byteArray;
 
-const threshold_command = "pkexec tee /sys/class/power_supply/BAT0/charge_control_end_threshold"
+let battery = "BAT0";
+let threshold_command = "pkexec tee /sys/class/power_supply/BAT0/charge_control_end_threshold";
+let read_threshold_command = "cat /sys/class/power_supply/BAT0/charge_control_end_threshold";
 
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
         _init() {
             super._init(0.0, _('Battery Threshold Indicator'));
+
+            this._init_battery();
 
             this.get_threshold();
 
@@ -75,6 +79,20 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(get_current_threshold_item);
         }
 
+        _init_battery() {
+            let [, out, ,] = GLib.spawn_command_line_sync("/bin/sh -c 'ls -1 /sys/class/power_supply/*/charge_control_end_threshold | cut -d/ -f 5'");
+            let batteries = (ByteArray.toString(out)).split("\n");
+            if (batteries.length > 0 && batteries.indexOf("BAT0") < 0) {
+                // No BAT0, pick "first" one that appeared among alternatives.
+		let newbat = batteries[0];
+                threshold_command = threshold_command.replace(battery, newbat);
+                read_threshold_command = read_threshold_command.replace(battery, newbat);
+	        battery = newbat;
+
+                //Main.notify(_(`Using battery ${battery}`));
+            }
+        }
+
         set_threshold(new_threshold) {
             if (new_threshold !== this.threshold) {
                 try {
@@ -104,7 +122,7 @@ const Indicator = GObject.registerClass(
         }
 
         get_threshold() {
-            let [, out, ,] = GLib.spawn_command_line_sync("cat /sys/class/power_supply/BAT0/charge_control_end_threshold");
+            let [, out, ,] = GLib.spawn_command_line_sync(read_threshold_command);
             this.threshold = (ByteArray.toString(out)).trim();
         }
 
